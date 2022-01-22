@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package shop.admin.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "api/shop/admin/v1;v1";
+
+
+service ShopAdmin {
+
+    rpc ListGame (ListGameReq) returns (ListGameReply) {
+        option (google.api.http) = {
+            get: "/admin/v1/catalog/games"
+        };
+    }
+
+    rpc CreateGame (CreateGameReq) returns (CreateGameReply) {
+        option (google.api.http) = {
+            post: "/admin/v1/catalog/games"
+            body: "*"
+        };
+    }
+
+    rpc UpdateGame (UpdateGameReq) returns (UpdateGameReply) {
+        option (google.api.http) = {
+            put: "/admin/v1/catalog/games/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteGame (DeleteGameReq) returns (DeleteGameReply) {
+        option (google.api.http) = {
+            delete: "/admin/v1/catalog/games/{id}"
+        };
+    }
+
+    rpc GetGame (GetGameReq) returns (GetGameReply) {
+        option (google.api.http) = {
+            get: "admin/v1/catalog/games/{id}"
+        };
+    }
+
+}
+
+
+message ListGameReq {
+    int64 page_num = 1;
+    int64 page_size = 2;
+}
+
+message ListGameReply {
+    message Game {
+        message Image {
+            string url = 1;
+        }
+        int64 id = 1;
+        string name = 2;
+        string description = 3;
+        int64 count = 4;
+        repeated Image image = 5;
+    }
+    repeated Game results = 1;
+}
+
+message GetGameReq {
+    int64 id = 1;
+}
+
+message GetGameReply {
+    message Image {
+        string url = 1;
+    }
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
+    repeated Image image = 5;
+}
+
+
+message CreateGameReq {
+    message Image {
+        string url = 1;
+    }
+    string name = 1;
+    string description = 2;
+    int64 count = 3;
+    repeated Image image = 4;
+}
+
+message CreateGameReply {
+
+}
+
+message UpdateGameReq {
+    message Image {
+        string url = 1;
+    }
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
+    repeated Image image = 5;
+}
+
+message UpdateGameReply {
+
+}
+
+message DeleteGameReq {
+    int64 id = 1;
+}
+
+message DeleteGameReply {
+
+}

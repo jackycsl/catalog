@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package catalog.service.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "api/catalog/service/v1;v1";
+
+
+service Catalog {
+    rpc ListGame (ListGameReq) returns (ListGameReply) {
+    }
+
+    rpc CreateGame (CreateGameReq) returns (CreateGameReply) {
+    }
+
+    rpc GetGame (GetGameReq) returns (GetGameReply) {
+    }
+
+    rpc UpdateGame (UpdateGameReq) returns (UpdateGameReply) {
+    }
+
+    rpc DeleteGame (DeleteGameReq) returns (DeleteGameReply) {
+    }
+
+    rpc HealthCheck (HealthReq) returns (HealthReply) {
+        option (google.api.http) = {
+            get: "/v1/catalog/health"
+        };
+    }
+}
+
+
+message ListGameReq {
+    int64 page_num = 1;
+    int64 page_size = 2;
+}
+
+message ListGameReply {
+    message Game {
+        message Image {
+            string url = 1;
+        }
+        int64 id = 1;
+        string name = 2;
+        string description = 3;
+        int64 count = 4;
+        repeated Image image = 5;
+    }
+    repeated Game results = 1;
+}
+
+message CreateGameReq {
+    message Image {
+        string url = 1;
+    }
+    string name = 1;
+    string description = 2;
+    int64 count = 3;
+    repeated Image image = 4;
+}
+
+message CreateGameReply {
+    message Image {
+        string url = 1;
+    }
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
+    repeated Image image = 5;
+}
+
+message GetGameReq {
+    int64 id = 1;
+}
+
+message GetGameReply {
+    message Image {
+        string url = 1;
+    }
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
+    repeated Image image = 5;
+}
+
+message UpdateGameReq {
+    message Image {
+        string url = 1;
+    }
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
+    repeated Image image = 5;
+}
+
+message UpdateGameReply {
+    message Image {
+        string url = 1;
+    }
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
+    repeated Image image = 5;
+}
+
+message DeleteGameReq {
+    int64 id = 1;
+}
+
+message DeleteGameReply {
+}
+
+message HealthReq {
+}
+
+message HealthReply {
+    enum ServingStatus {
+        UNKNOWN = 0;
+        SERVING = 1;
+        NOT_SERVING = 2;
+        SERVICE_UNKNOWN = 3;
+    }
+    ServingStatus status = 1;
+}

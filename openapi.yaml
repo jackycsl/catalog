@@ -1,0 +1,328 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/apps/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /admin/v1/catalog/games:
+        get:
+            tags:
+                - ShopAdmin
+            operationId: ShopAdmin_ListGame
+            parameters:
+                - name: pageNum
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListGameReply'
+        post:
+            tags:
+                - ShopAdmin
+            operationId: ShopAdmin_CreateGame
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateGameReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateGameReply'
+    /admin/v1/catalog/games/{id}:
+        put:
+            tags:
+                - ShopAdmin
+            operationId: ShopAdmin_UpdateGame
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateGameReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateGameReply'
+        delete:
+            tags:
+                - ShopAdmin
+            operationId: ShopAdmin_DeleteGame
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteGameReply'
+    /v1/catalog/Games:
+        get:
+            tags:
+                - ShopInterface
+            operationId: ShopInterface_ListGame
+            parameters:
+                - name: pageNum
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListGameReply'
+    /v1/catalog/Games/{id}:
+        get:
+            tags:
+                - ShopInterface
+            operationId: ShopInterface_GetGame
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetGameReply'
+    /v1/catalog/health:
+        get:
+            tags:
+                - Catalog
+            operationId: Catalog_HealthCheck
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HealthReply'
+    admin/v1/catalog/games/{id}:
+        get:
+            tags:
+                - ShopAdmin
+            operationId: ShopAdmin_GetGame
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetGameReply'
+components:
+    schemas:
+        CreateGameReply:
+            type: object
+            properties: {}
+        CreateGameReq:
+            type: object
+            properties:
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
+                image:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CreateGameReq_Image'
+        CreateGameReq_Image:
+            type: object
+            properties:
+                url:
+                    type: string
+        DeleteGameReply:
+            type: object
+            properties: {}
+        Game_Image:
+            type: object
+            properties:
+                url:
+                    type: string
+        Game_Image:
+            type: object
+            properties:
+                url:
+                    type: string
+        GetGameReply:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
+                image:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GetGameReply_Image'
+        GetGameReply:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
+                image:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GetGameReply_Image'
+        GetGameReply_Image:
+            type: object
+            properties:
+                url:
+                    type: string
+        GetGameReply_Image:
+            type: object
+            properties:
+                url:
+                    type: string
+        HealthReply:
+            type: object
+            properties:
+                status:
+                    type: integer
+                    format: enum
+        ListGameReply:
+            type: object
+            properties:
+                results:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ListGameReply_Game'
+        ListGameReply:
+            type: object
+            properties:
+                results:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ListGameReply_Game'
+        ListGameReply_Game:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
+                image:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Game_Image'
+        ListGameReply_Game:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
+                image:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Game_Image'
+        UpdateGameReply:
+            type: object
+            properties: {}
+        UpdateGameReq:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
+                image:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UpdateGameReq_Image'
+        UpdateGameReq_Image:
+            type: object
+            properties:
+                url:
+                    type: string
+tags:
+    - name: Catalog
+    - name: ShopAdmin
+    - name: ShopInterface
