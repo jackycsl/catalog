@@ -38,7 +38,8 @@ func NewEntClient(conf *conf.Data, logger log.Logger) *ent.Client {
 		log.Fatalf("failed opening connection to db: %v", err)
 	}
 	//Run the auto migration tool
-	if err := client.Schema.Create(context.Background(), migrate.WithForeignKeys(false)); err != nil {
+	if err := client.Schema.Create(context.Background(), migrate.WithForeignKeys(false), migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true)); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 	return client
@@ -64,13 +65,14 @@ func NewKafkaProducer(conf *conf.Data, logger log.Logger) sarama.AsyncProducer {
 	return p
 }
 
-// NewData .
+// NewData
 func NewData(entClient *ent.Client, redisClient *redis.Client, producer sarama.AsyncProducer, logger log.Logger) (*Data, func(), error) {
 	log := log.NewHelper(log.With(logger, "module", "catalog-service/data"))
 
 	d := &Data{
 		db:  entClient,
 		rdb: redisClient,
+		kp:  producer,
 		log: log,
 	}
 	return d, func() {

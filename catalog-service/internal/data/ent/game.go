@@ -3,13 +3,11 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/jackycsl/catalog/catalog-service/internal/biz"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent/game"
 )
 
@@ -24,10 +22,6 @@ type Game struct {
 	Description string `json:"description,omitempty"`
 	// Count holds the value of the "count" field.
 	Count int64 `json:"count,omitempty"`
-	// Price holds the value of the "price" field.
-	Price int64 `json:"price,omitempty"`
-	// Images holds the value of the "images" field.
-	Images []biz.Image `json:"images,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -39,9 +33,7 @@ func (*Game) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case game.FieldImages:
-			values[i] = new([]byte)
-		case game.FieldID, game.FieldCount, game.FieldPrice:
+		case game.FieldID, game.FieldCount:
 			values[i] = new(sql.NullInt64)
 		case game.FieldName, game.FieldDescription:
 			values[i] = new(sql.NullString)
@@ -85,20 +77,6 @@ func (ga *Game) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field count", values[i])
 			} else if value.Valid {
 				ga.Count = value.Int64
-			}
-		case game.FieldPrice:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field price", values[i])
-			} else if value.Valid {
-				ga.Price = value.Int64
-			}
-		case game.FieldImages:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field images", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &ga.Images); err != nil {
-					return fmt.Errorf("unmarshal field images: %w", err)
-				}
 			}
 		case game.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -146,10 +124,6 @@ func (ga *Game) String() string {
 	builder.WriteString(ga.Description)
 	builder.WriteString(", count=")
 	builder.WriteString(fmt.Sprintf("%v", ga.Count))
-	builder.WriteString(", price=")
-	builder.WriteString(fmt.Sprintf("%v", ga.Price))
-	builder.WriteString(", images=")
-	builder.WriteString(fmt.Sprintf("%v", ga.Images))
 	builder.WriteString(", created_at=")
 	builder.WriteString(ga.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"golang.org/x/sync/errgroup"
 )
 
 type Image struct {
@@ -16,7 +15,6 @@ type Game struct {
 	Name        string
 	Description string
 	Count       int64
-	Images      []Image
 }
 
 type GameRepo interface {
@@ -24,8 +22,8 @@ type GameRepo interface {
 	// read from db if cache miss
 	GetGame(ctx context.Context, id int64) (*Game, error)
 	ListGame(ctx context.Context, pageNum, pageSize int64) ([]*Game, error)
-	// CreateGame(ctx context.Context, c *Game) (*Game, error)
-	// UpdateGame(ctx context.Context, c *Game) (*Game, error)
+	CreateGame(ctx context.Context, c *Game) (*Game, error)
+	UpdateGame(ctx context.Context, c *Game) (*Game, error)
 
 	// redis
 	// read from Redis. if cache miss, read from db and create backfill job
@@ -49,36 +47,45 @@ func NewGameUseCase(repo GameRepo, logger log.Logger) *GameUseCase {
 }
 
 func (uc *GameUseCase) Create(ctx context.Context, u *Game) (*Game, error) {
-	return uc.repo.KafkaCreateGame(ctx, u)
+	g, err := uc.repo.CreateGame(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+	return g, err
 }
 
 func (uc *GameUseCase) Get(ctx context.Context, id int64) (*Game, error) {
 
-	p, err := uc.repo.CacheGetGame(ctx, id)
+	p, err := uc.repo.GetGame(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	g, ctx := errgroup.WithContext(ctx)
 
-	// cache miss, read from db, create backfill job
-	if p.Id == 0 {
-		p, err = uc.repo.GetGame(ctx, id)
-		if err != nil {
-			return nil, err
-		}
+	// p, err := uc.repo.CacheGetGame(ctx, id)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// g, ctx := errgroup.WithContext(ctx)
 
-		g.Go(func() error {
-			err = uc.repo.KafkaBackfillGame(ctx, id)
-			return err
-		})
+	// // cache miss, read from db, create backfill job
+	// if p.Id == 0 {
+	// 	p, err = uc.repo.GetGame(ctx, id)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
 
-	}
+	// 	g.Go(func() error {
+	// 		err = uc.repo.KafkaBackfillGame(ctx, id)
+	// 		return err
+	// 	})
+
+	// }
 
 	return p, nil
 }
 
 func (uc *GameUseCase) Update(ctx context.Context, u *Game) (*Game, error) {
-	return uc.repo.KafkaUpdateGame(ctx, u)
+	return uc.repo.UpdateGame(ctx, u)
 }
 
 func (uc *GameUseCase) List(ctx context.Context, pageNum, pageSize int64) ([]*Game, error) {

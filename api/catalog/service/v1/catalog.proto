@@ -38,37 +38,25 @@ message ListGameReq {
 
 message ListGameReply {
     message Game {
-        message Image {
-            string url = 1;
-        }
         int64 id = 1;
         string name = 2;
         string description = 3;
         int64 count = 4;
-        repeated Image image = 5;
     }
     repeated Game results = 1;
 }
 
 message CreateGameReq {
-    message Image {
-        string url = 1;
-    }
     string name = 1;
     string description = 2;
     int64 count = 3;
-    repeated Image image = 4;
 }
 
 message CreateGameReply {
-    message Image {
-        string url = 1;
-    }
     int64 id = 1;
     string name = 2;
     string description = 3;
     int64 count = 4;
-    repeated Image image = 5;
 }
 
 message GetGameReq {
@@ -76,36 +64,24 @@ message GetGameReq {
 }
 
 message GetGameReply {
-    message Image {
-        string url = 1;
-    }
     int64 id = 1;
     string name = 2;
     string description = 3;
     int64 count = 4;
-    repeated Image image = 5;
 }
 
 message UpdateGameReq {
-    message Image {
-        string url = 1;
-    }
     int64 id = 1;
     string name = 2;
     string description = 3;
     int64 count = 4;
-    repeated Image image = 5;
 }
 
 message UpdateGameReply {
-    message Image {
-        string url = 1;
-    }
     int64 id = 1;
     string name = 2;
     string description = 3;
     int64 count = 4;
-    repeated Image image = 5;
 }
 
 message DeleteGameReq {

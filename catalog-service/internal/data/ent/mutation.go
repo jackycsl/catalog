@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jackycsl/catalog/catalog-service/internal/biz"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent/game"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent/predicate"
 
@@ -38,9 +37,6 @@ type GameMutation struct {
 	description   *string
 	count         *int64
 	addcount      *int64
-	price         *int64
-	addprice      *int64
-	images        *[]biz.Image
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -281,98 +277,6 @@ func (m *GameMutation) ResetCount() {
 	m.addcount = nil
 }
 
-// SetPrice sets the "price" field.
-func (m *GameMutation) SetPrice(i int64) {
-	m.price = &i
-	m.addprice = nil
-}
-
-// Price returns the value of the "price" field in the mutation.
-func (m *GameMutation) Price() (r int64, exists bool) {
-	v := m.price
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPrice returns the old "price" field's value of the Game entity.
-// If the Game object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GameMutation) OldPrice(ctx context.Context) (v int64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPrice is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPrice requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPrice: %w", err)
-	}
-	return oldValue.Price, nil
-}
-
-// AddPrice adds i to the "price" field.
-func (m *GameMutation) AddPrice(i int64) {
-	if m.addprice != nil {
-		*m.addprice += i
-	} else {
-		m.addprice = &i
-	}
-}
-
-// AddedPrice returns the value that was added to the "price" field in this mutation.
-func (m *GameMutation) AddedPrice() (r int64, exists bool) {
-	v := m.addprice
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetPrice resets all changes to the "price" field.
-func (m *GameMutation) ResetPrice() {
-	m.price = nil
-	m.addprice = nil
-}
-
-// SetImages sets the "images" field.
-func (m *GameMutation) SetImages(b []biz.Image) {
-	m.images = &b
-}
-
-// Images returns the value of the "images" field in the mutation.
-func (m *GameMutation) Images() (r []biz.Image, exists bool) {
-	v := m.images
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldImages returns the old "images" field's value of the Game entity.
-// If the Game object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GameMutation) OldImages(ctx context.Context) (v []biz.Image, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldImages is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldImages requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldImages: %w", err)
-	}
-	return oldValue.Images, nil
-}
-
-// ResetImages resets all changes to the "images" field.
-func (m *GameMutation) ResetImages() {
-	m.images = nil
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *GameMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -464,7 +368,7 @@ func (m *GameMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GameMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, game.FieldName)
 	}
@@ -473,12 +377,6 @@ func (m *GameMutation) Fields() []string {
 	}
 	if m.count != nil {
 		fields = append(fields, game.FieldCount)
-	}
-	if m.price != nil {
-		fields = append(fields, game.FieldPrice)
-	}
-	if m.images != nil {
-		fields = append(fields, game.FieldImages)
 	}
 	if m.created_at != nil {
 		fields = append(fields, game.FieldCreatedAt)
@@ -500,10 +398,6 @@ func (m *GameMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case game.FieldCount:
 		return m.Count()
-	case game.FieldPrice:
-		return m.Price()
-	case game.FieldImages:
-		return m.Images()
 	case game.FieldCreatedAt:
 		return m.CreatedAt()
 	case game.FieldUpdatedAt:
@@ -523,10 +417,6 @@ func (m *GameMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDescription(ctx)
 	case game.FieldCount:
 		return m.OldCount(ctx)
-	case game.FieldPrice:
-		return m.OldPrice(ctx)
-	case game.FieldImages:
-		return m.OldImages(ctx)
 	case game.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case game.FieldUpdatedAt:
@@ -561,20 +451,6 @@ func (m *GameMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCount(v)
 		return nil
-	case game.FieldPrice:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPrice(v)
-		return nil
-	case game.FieldImages:
-		v, ok := value.([]biz.Image)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetImages(v)
-		return nil
 	case game.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -600,9 +476,6 @@ func (m *GameMutation) AddedFields() []string {
 	if m.addcount != nil {
 		fields = append(fields, game.FieldCount)
 	}
-	if m.addprice != nil {
-		fields = append(fields, game.FieldPrice)
-	}
 	return fields
 }
 
@@ -613,8 +486,6 @@ func (m *GameMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case game.FieldCount:
 		return m.AddedCount()
-	case game.FieldPrice:
-		return m.AddedPrice()
 	}
 	return nil, false
 }
@@ -630,13 +501,6 @@ func (m *GameMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCount(v)
-		return nil
-	case game.FieldPrice:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddPrice(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Game numeric field %s", name)
@@ -673,12 +537,6 @@ func (m *GameMutation) ResetField(name string) error {
 		return nil
 	case game.FieldCount:
 		m.ResetCount()
-		return nil
-	case game.FieldPrice:
-		m.ResetPrice()
-		return nil
-	case game.FieldImages:
-		m.ResetImages()
 		return nil
 	case game.FieldCreatedAt:
 		m.ResetCreatedAt()

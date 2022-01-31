@@ -24,7 +24,6 @@ func (r *gameRepo) CacheGetGame(ctx context.Context, id int64) (*biz.Game, error
 		Name:        gameData["Name"],
 		Description: gameData["Description"],
 		Count:       count,
-		Images:      append([]biz.Image{}, biz.Image{gameData["images"]}),
 	}, nil
 }
 

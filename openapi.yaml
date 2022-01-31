@@ -177,28 +177,9 @@ components:
                 count:
                     type: integer
                     format: int64
-                image:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/CreateGameReq_Image'
-        CreateGameReq_Image:
-            type: object
-            properties:
-                url:
-                    type: string
         DeleteGameReply:
             type: object
             properties: {}
-        Game_Image:
-            type: object
-            properties:
-                url:
-                    type: string
-        Game_Image:
-            type: object
-            properties:
-                url:
-                    type: string
         GetGameReply:
             type: object
             properties:
@@ -212,10 +193,6 @@ components:
                 count:
                     type: integer
                     format: int64
-                image:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/GetGameReply_Image'
         GetGameReply:
             type: object
             properties:
@@ -229,20 +206,6 @@ components:
                 count:
                     type: integer
                     format: int64
-                image:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/GetGameReply_Image'
-        GetGameReply_Image:
-            type: object
-            properties:
-                url:
-                    type: string
-        GetGameReply_Image:
-            type: object
-            properties:
-                url:
-                    type: string
         HealthReply:
             type: object
             properties:
@@ -276,10 +239,6 @@ components:
                 count:
                     type: integer
                     format: int64
-                image:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Game_Image'
         ListGameReply_Game:
             type: object
             properties:
@@ -293,10 +252,6 @@ components:
                 count:
                     type: integer
                     format: int64
-                image:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Game_Image'
         UpdateGameReply:
             type: object
             properties: {}
@@ -313,15 +268,6 @@ components:
                 count:
                     type: integer
                     format: int64
-                image:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/UpdateGameReq_Image'
-        UpdateGameReq_Image:
-            type: object
-            properties:
-                url:
-                    type: string
 tags:
     - name: Catalog
     - name: ShopAdmin

@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/jackycsl/catalog/catalog-service/internal/biz"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent/game"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent/predicate"
 )
@@ -51,25 +50,6 @@ func (gu *GameUpdate) SetCount(i int64) *GameUpdate {
 // AddCount adds i to the "count" field.
 func (gu *GameUpdate) AddCount(i int64) *GameUpdate {
 	gu.mutation.AddCount(i)
-	return gu
-}
-
-// SetPrice sets the "price" field.
-func (gu *GameUpdate) SetPrice(i int64) *GameUpdate {
-	gu.mutation.ResetPrice()
-	gu.mutation.SetPrice(i)
-	return gu
-}
-
-// AddPrice adds i to the "price" field.
-func (gu *GameUpdate) AddPrice(i int64) *GameUpdate {
-	gu.mutation.AddPrice(i)
-	return gu
-}
-
-// SetImages sets the "images" field.
-func (gu *GameUpdate) SetImages(b []biz.Image) *GameUpdate {
-	gu.mutation.SetImages(b)
 	return gu
 }
 
@@ -206,27 +186,6 @@ func (gu *GameUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: game.FieldCount,
 		})
 	}
-	if value, ok := gu.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: game.FieldPrice,
-		})
-	}
-	if value, ok := gu.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: game.FieldPrice,
-		})
-	}
-	if value, ok := gu.mutation.Images(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: game.FieldImages,
-		})
-	}
 	if value, ok := gu.mutation.CreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -282,25 +241,6 @@ func (guo *GameUpdateOne) SetCount(i int64) *GameUpdateOne {
 // AddCount adds i to the "count" field.
 func (guo *GameUpdateOne) AddCount(i int64) *GameUpdateOne {
 	guo.mutation.AddCount(i)
-	return guo
-}
-
-// SetPrice sets the "price" field.
-func (guo *GameUpdateOne) SetPrice(i int64) *GameUpdateOne {
-	guo.mutation.ResetPrice()
-	guo.mutation.SetPrice(i)
-	return guo
-}
-
-// AddPrice adds i to the "price" field.
-func (guo *GameUpdateOne) AddPrice(i int64) *GameUpdateOne {
-	guo.mutation.AddPrice(i)
-	return guo
-}
-
-// SetImages sets the "images" field.
-func (guo *GameUpdateOne) SetImages(b []biz.Image) *GameUpdateOne {
-	guo.mutation.SetImages(b)
 	return guo
 }
 
@@ -459,27 +399,6 @@ func (guo *GameUpdateOne) sqlSave(ctx context.Context) (_node *Game, err error) 
 			Type:   field.TypeInt64,
 			Value:  value,
 			Column: game.FieldCount,
-		})
-	}
-	if value, ok := guo.mutation.Price(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: game.FieldPrice,
-		})
-	}
-	if value, ok := guo.mutation.AddedPrice(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: game.FieldPrice,
-		})
-	}
-	if value, ok := guo.mutation.Images(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: game.FieldImages,
 		})
 	}
 	if value, ok := guo.mutation.CreatedAt(); ok {

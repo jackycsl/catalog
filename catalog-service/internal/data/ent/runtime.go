@@ -16,11 +16,11 @@ func init() {
 	gameFields := schema.Game{}.Fields()
 	_ = gameFields
 	// gameDescCreatedAt is the schema descriptor for created_at field.
-	gameDescCreatedAt := gameFields[6].Descriptor()
+	gameDescCreatedAt := gameFields[4].Descriptor()
 	// game.DefaultCreatedAt holds the default value on creation for the created_at field.
 	game.DefaultCreatedAt = gameDescCreatedAt.Default.(func() time.Time)
 	// gameDescUpdatedAt is the schema descriptor for updated_at field.
-	gameDescUpdatedAt := gameFields[7].Descriptor()
+	gameDescUpdatedAt := gameFields[5].Descriptor()
 	// game.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	game.DefaultUpdatedAt = gameDescUpdatedAt.Default.(func() time.Time)
 }

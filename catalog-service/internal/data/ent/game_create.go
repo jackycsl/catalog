@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/jackycsl/catalog/catalog-service/internal/biz"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent/game"
 )
 
@@ -36,18 +35,6 @@ func (gc *GameCreate) SetDescription(s string) *GameCreate {
 // SetCount sets the "count" field.
 func (gc *GameCreate) SetCount(i int64) *GameCreate {
 	gc.mutation.SetCount(i)
-	return gc
-}
-
-// SetPrice sets the "price" field.
-func (gc *GameCreate) SetPrice(i int64) *GameCreate {
-	gc.mutation.SetPrice(i)
-	return gc
-}
-
-// SetImages sets the "images" field.
-func (gc *GameCreate) SetImages(b []biz.Image) *GameCreate {
-	gc.mutation.SetImages(b)
 	return gc
 }
 
@@ -177,12 +164,6 @@ func (gc *GameCreate) check() error {
 	if _, ok := gc.mutation.Count(); !ok {
 		return &ValidationError{Name: "count", err: errors.New(`ent: missing required field "Game.count"`)}
 	}
-	if _, ok := gc.mutation.Price(); !ok {
-		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "Game.price"`)}
-	}
-	if _, ok := gc.mutation.Images(); !ok {
-		return &ValidationError{Name: "images", err: errors.New(`ent: missing required field "Game.images"`)}
-	}
 	if _, ok := gc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Game.created_at"`)}
 	}
@@ -245,22 +226,6 @@ func (gc *GameCreate) createSpec() (*Game, *sqlgraph.CreateSpec) {
 			Column: game.FieldCount,
 		})
 		_node.Count = value
-	}
-	if value, ok := gc.mutation.Price(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt64,
-			Value:  value,
-			Column: game.FieldPrice,
-		})
-		_node.Price = value
-	}
-	if value, ok := gc.mutation.Images(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: game.FieldImages,
-		})
-		_node.Images = value
 	}
 	if value, ok := gc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
