@@ -6,8 +6,7 @@ import (
 
 	v1 "github.com/jackycsl/catalog/api/catalog/service/v1"
 	"github.com/jackycsl/catalog/catalog-service/internal/biz"
-	"github.com/jackycsl/catalog/catalog-service/internal/data"
-	"go.opentelemetry.io/otel"
+	"github.com/jackycsl/catalog/pkg/util/helper"
 )
 
 func (s *CatalogService) CreateGame(ctx context.Context, req *v1.CreateGameReq) (*v1.CreateGameReply, error) {
@@ -29,14 +28,11 @@ func (s *CatalogService) CreateGame(ctx context.Context, req *v1.CreateGameReq) 
 }
 
 func (s *CatalogService) GetGame(ctx context.Context, req *v1.GetGameReq) (*v1.GetGameReply, error) {
-	tr := otel.Tracer("api")
-	ctx, span := tr.Start(ctx, "GetGame")
-	defer span.End()
 
 	x, err := s.bc.Get(ctx, req.Id)
 	if err != nil {
 		switch {
-		case errors.Is(err, data.ErrRecordNotFound):
+		case errors.Is(err, helper.ErrRecordNotFound):
 			return nil, v1.ErrorGameNotFound("Game %s not found", req.Id)
 		default:
 			return nil, v1.ErrorUnknownError(err.Error())
@@ -61,7 +57,7 @@ func (s *CatalogService) UpdateGame(ctx context.Context, req *v1.UpdateGameReq) 
 	x, err := s.bc.Update(ctx, b)
 	if err != nil {
 		switch {
-		case errors.Is(err, data.ErrRecordNotFound):
+		case errors.Is(err, helper.ErrRecordNotFound):
 			return nil, v1.ErrorGameNotFound("Game %s not found", req.Id)
 		default:
 			return nil, v1.ErrorUnknownError(err.Error())

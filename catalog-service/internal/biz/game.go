@@ -2,8 +2,11 @@ package biz
 
 import (
 	"context"
+	"errors"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/jackycsl/catalog/pkg/util/helper"
+	"golang.org/x/sync/singleflight"
 )
 
 type Image struct {
@@ -29,6 +32,8 @@ type GameRepo interface {
 	// read from Redis. if cache miss, read from db and create backfill job
 	CacheGetGame(ctx context.Context, id int64) (*Game, error)
 	CacheListGame(ctx context.Context, pageNum int64, pageSize int64) ([]*Game, error)
+	CacheCreateGame(ctx context.Context, c *Game) (*Game, error)
+	CacheUpdateGame(ctx context.Context, c *Game) (*Game, error)
 
 	// kafka
 	// Create, update & backfill will be handled by catalog-job
@@ -47,7 +52,13 @@ func NewGameUseCase(repo GameRepo, logger log.Logger) *GameUseCase {
 }
 
 func (uc *GameUseCase) Create(ctx context.Context, u *Game) (*Game, error) {
-	g, err := uc.repo.CreateGame(ctx, u)
+	// g, err := uc.repo.CreateGame(ctx, u)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return g, err
+
+	g, err := uc.repo.CacheCreateGame(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -55,31 +66,24 @@ func (uc *GameUseCase) Create(ctx context.Context, u *Game) (*Game, error) {
 }
 
 func (uc *GameUseCase) Get(ctx context.Context, id int64) (*Game, error) {
+	var requestGroup singleflight.Group
 
-	p, err := uc.repo.GetGame(ctx, id)
-	if err != nil {
-		return nil, err
+	p, err := uc.repo.CacheGetGame(ctx, id)
+
+	// cache miss, read from db, create backfill job
+	if errors.Is(err, helper.ErrRecordNotFound) {
+		val, err, _ := requestGroup.Do("get from db", func() (interface{}, error) {
+			return uc.repo.GetGame(ctx, id)
+		})
+		if err != nil {
+			return nil, err
+		}
+		p = val.(*Game)
+
+		go func(ctx context.Context, id int64) {
+			uc.repo.KafkaBackfillGame(ctx, id)
+		}(ctx, id)
 	}
-
-	// p, err := uc.repo.CacheGetGame(ctx, id)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// g, ctx := errgroup.WithContext(ctx)
-
-	// // cache miss, read from db, create backfill job
-	// if p.Id == 0 {
-	// 	p, err = uc.repo.GetGame(ctx, id)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-
-	// 	g.Go(func() error {
-	// 		err = uc.repo.KafkaBackfillGame(ctx, id)
-	// 		return err
-	// 	})
-
-	// }
 
 	return p, nil
 }

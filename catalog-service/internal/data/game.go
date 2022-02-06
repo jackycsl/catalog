@@ -2,17 +2,16 @@ package data
 
 import (
 	"context"
-	"errors"
 
 	"github.com/jackycsl/catalog/catalog-service/internal/biz"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent"
+	"github.com/jackycsl/catalog/pkg/util/helper"
 	"github.com/jackycsl/catalog/pkg/util/pagination"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 var _ biz.GameRepo = (*gameRepo)(nil)
-var ErrRecordNotFound = errors.New("record not found")
 
 type gameRepo struct {
 	data *Data
@@ -50,7 +49,7 @@ func (r *gameRepo) GetGame(ctx context.Context, id int64) (*biz.Game, error) {
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
-			return nil, ErrRecordNotFound
+			return nil, helper.ErrRecordNotFound
 		default:
 			return nil, err
 		}
@@ -73,7 +72,7 @@ func (r *gameRepo) UpdateGame(ctx context.Context, b *biz.Game) (*biz.Game, erro
 	if err != nil {
 		switch {
 		case ent.IsNotFound(err):
-			return nil, ErrRecordNotFound
+			return nil, helper.ErrRecordNotFound
 		default:
 			return nil, err
 		}
