@@ -13,7 +13,6 @@ var ProviderSet = wire.NewSet(NewCatalogJob)
 
 type CatalogJob struct {
 	v1.UnimplementedCatalogJobServer
-
 	oc  *biz.CatalogJobUseCase
 	log *log.Helper
 }

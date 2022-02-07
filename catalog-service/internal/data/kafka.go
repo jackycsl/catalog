@@ -7,6 +7,7 @@ import (
 
 	"github.com/Shopify/sarama"
 	"github.com/jackycsl/catalog/catalog-service/internal/biz"
+	"github.com/jackycsl/catalog/pkg/util/helper"
 )
 
 func (r *gameRepo) KafkaCreateGame(ctx context.Context, c *biz.Game) (*biz.Game, error) {
@@ -30,7 +31,7 @@ func (r *gameRepo) KafkaBackfillGame(ctx context.Context, id int64) error {
 		return err
 	}
 	r.data.kp.Input() <- &sarama.ProducerMessage{
-		Topic: "backfillGame",
+		Topic: helper.BackfillGameTopic,
 		Value: sarama.ByteEncoder(g),
 	}
 	return nil

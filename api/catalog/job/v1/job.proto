@@ -2,10 +2,12 @@ syntax = "proto3";
 
 package catalog.job.v1;
 
-import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "api/catalog/job/v1;v1";
 
 
 service CatalogJob {
+  rpc ConsumerJob(google.protobuf.Empty) returns (google.protobuf.Empty) {
+  }
 }

@@ -21,7 +21,10 @@ import (
 
 // initApp init kratos application.
 func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger, tracerProvider *trace.TracerProvider) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewData(confData, logger)
+	client := data.NewEntClient(confData, logger)
+	redisClient := data.NewRedisClient(confData, logger)
+	consumer := data.NewKafkaConsumer(confData, logger)
+	dataData, cleanup, err := data.NewData(client, redisClient, consumer, logger)
 	if err != nil {
 		return nil, nil, err
 	}

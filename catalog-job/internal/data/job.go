@@ -12,13 +12,9 @@ type catalogJobRepo struct {
 	log  *log.Helper
 }
 
-type ShippingEntry struct {
-	OrderId string `json:"order_id"`
-}
-
 func NewCatalogJobRepo(data *Data, logger log.Logger) biz.CatalogJobRepo {
 	return &catalogJobRepo{
 		data: data,
-		log:  log.NewHelper(log.With(logger, "data/courier")),
+		log:  log.NewHelper(log.With(logger, "data/catalog")),
 	}
 }
