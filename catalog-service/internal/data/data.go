@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"entgo.io/ent/examples/edgeindex/ent/migrate"
-	"github.com/Shopify/sarama"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"github.com/jackycsl/catalog/catalog-service/internal/conf"
 	"github.com/jackycsl/catalog/catalog-service/internal/data/ent"
+	"github.com/jackycsl/catalog/pkg/event/event"
+	"github.com/jackycsl/catalog/pkg/event/kafka"
 
 	// init mysql driver
 	_ "github.com/go-sql-driver/mysql"
@@ -22,7 +23,7 @@ var ProviderSet = wire.NewSet(NewData, NewEntClient, NewRedisClient, NewKafkaPro
 type Data struct {
 	db  *ent.Client
 	rdb *redis.Client
-	kp  sarama.AsyncProducer
+	kp  event.Sender
 	log *log.Helper
 }
 
@@ -56,9 +57,9 @@ func NewRedisClient(conf *conf.Data, logger log.Logger) *redis.Client {
 	return client
 }
 
-func NewKafkaProducer(conf *conf.Data, logger log.Logger) sarama.AsyncProducer {
-	c := sarama.NewConfig()
-	p, err := sarama.NewAsyncProducer(conf.Kafka.Addrs, c)
+func NewKafkaProducer(conf *conf.Data, logger log.Logger) event.Sender {
+
+	p, err := kafka.NewKafkaSender([]string(conf.Kafka.Addrs))
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +67,7 @@ func NewKafkaProducer(conf *conf.Data, logger log.Logger) sarama.AsyncProducer {
 }
 
 // NewData
-func NewData(entClient *ent.Client, redisClient *redis.Client, producer sarama.AsyncProducer, logger log.Logger) (*Data, func(), error) {
+func NewData(entClient *ent.Client, redisClient *redis.Client, producer event.Sender, logger log.Logger) (*Data, func(), error) {
 	log := log.NewHelper(log.With(logger, "module", "catalog-service/data"))
 
 	d := &Data{

@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 
-	"github.com/Shopify/sarama"
 	"github.com/jackycsl/catalog/catalog-service/internal/biz"
+	"github.com/jackycsl/catalog/pkg/event/kafka"
 	"github.com/jackycsl/catalog/pkg/util/helper"
 )
 
@@ -19,20 +20,22 @@ func (r *gameRepo) KafkaUpdateGame(ctx context.Context, c *biz.Game) (*biz.Game,
 }
 
 type GameEntry struct {
-	GameId string `json:"game_id"`
+	GameId int64 `json:"game_id"`
 }
 
 func (r *gameRepo) KafkaBackfillGame(ctx context.Context, id int64) error {
 	ge := &GameEntry{
-		GameId: fmt.Sprintf("%d", id),
+		GameId: id,
 	}
 	g, err := json.Marshal(ge)
 	if err != nil {
 		return err
 	}
-	r.data.kp.Input() <- &sarama.ProducerMessage{
-		Topic: helper.BackfillGameTopic,
-		Value: sarama.ByteEncoder(g),
+	msg := kafka.NewMessage(helper.BackfillGameTopic, fmt.Sprintf("%d", id), g)
+	err = r.data.kp.Send(context.Background(), msg)
+	if err != nil {
+		log.Println(err)
 	}
+	fmt.Printf("key:%s, value:%s\n", msg.Key(), msg.Value())
 	return nil
 }
