@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/jackycsl/catalog/pkg/util/helper"
@@ -73,6 +74,7 @@ func (uc *GameUseCase) Get(ctx context.Context, id int64) (*Game, error) {
 	// cache miss, read from db, create backfill job
 	if errors.Is(err, helper.ErrRecordNotFound) {
 		val, err, _ := requestGroup.Do("get from db", func() (interface{}, error) {
+			fmt.Println("requesting from db")
 			return uc.repo.GetGame(ctx, id)
 		})
 		if err != nil {

@@ -36,6 +36,6 @@ func (r *gameRepo) KafkaBackfillGame(ctx context.Context, id int64) error {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Printf("key:%s, value:%s\n", msg.Key(), msg.Value())
+	fmt.Printf("Sending backfill message to Kafka, key:%s, value:%s\n", msg.Key(), msg.Value())
 	return nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,7 +18,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name = "game.job"
+	Name = "catalog.job"
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
@@ -59,7 +60,10 @@ func main() {
 		panic(err)
 	}
 
-	data.Receive(receiver, db, rdb)
+	err = data.Receive(receiver, db, rdb)
+	if err != nil {
+		log.Println(err)
+	}
 
 	<-sigs
 	_ = receiver.Close()
