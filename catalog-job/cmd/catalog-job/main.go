@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -13,6 +15,7 @@ import (
 	"github.com/jackycsl/catalog/catalog-job/internal/data"
 	"github.com/jackycsl/catalog/pkg/event/kafka"
 	"github.com/jackycsl/catalog/pkg/util/helper"
+	"golang.org/x/sync/errgroup"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -58,19 +61,63 @@ func main() {
 
 	app := data.NewGameRepo(client)
 
+	g, ctx := errgroup.WithContext(context.Background())
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	receiver, err := kafka.NewKafkaReceiver(bc.Data.Kafka.Addrs, helper.BackfillGameTopic)
+
+	backfillReceiver, err := kafka.NewKafkaReceiver(bc.Data.Kafka.Addrs, helper.BackfillGameTopic)
 	if err != nil {
 		panic(err)
 	}
 
-	err = app.Backfill(receiver)
+	createReceiver, err := kafka.NewKafkaReceiver(bc.Data.Kafka.Addrs, helper.CreateGameTopic)
 	if err != nil {
-		log.Println(err)
+		panic(err)
 	}
 
-	<-sigs
-	_ = receiver.Close()
+	g.Go(func() error {
+		err = app.Backfill(backfillReceiver)
+		if err != nil {
+			log.Println(err)
+		}
+		return nil
+	})
+
+	g.Go(func() error {
+		err = app.Create(createReceiver)
+		if err != nil {
+			log.Println(err)
+		}
+		return nil
+	})
+
+	g.Go(func() error {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case s := <-sigs:
+			return fmt.Errorf("caught signal: %v", s.String())
+		}
+	})
+
+	g.Go(func() error {
+		<-sigs
+
+		fmt.Println("Stopping receivers...")
+		err := backfillReceiver.Close()
+		if err != nil {
+			return err
+		}
+		err = createReceiver.Close()
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err := g.Wait(); err != nil {
+		fmt.Println(err)
+		return
+	}
 
 }
