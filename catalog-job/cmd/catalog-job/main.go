@@ -93,26 +93,16 @@ func main() {
 
 	g.Go(func() error {
 		select {
+		case s := <-sigs:
+			backfillReceiver.Close()
+			createReceiver.Close()
+			if err != nil {
+				log.Println(err)
+			}
+			return fmt.Errorf("caught signal: %v", s.String())
 		case <-ctx.Done():
 			return ctx.Err()
-		case s := <-sigs:
-			return fmt.Errorf("caught signal: %v", s.String())
 		}
-	})
-
-	g.Go(func() error {
-		<-sigs
-
-		fmt.Println("Stopping receivers...")
-		err := backfillReceiver.Close()
-		if err != nil {
-			return err
-		}
-		err = createReceiver.Close()
-		if err != nil {
-			return err
-		}
-		return nil
 	})
 
 	if err := g.Wait(); err != nil {

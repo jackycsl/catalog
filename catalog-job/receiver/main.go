@@ -11,13 +11,12 @@ import (
 
 	"github.com/jackycsl/catalog/pkg/event/event"
 	"github.com/jackycsl/catalog/pkg/event/kafka"
-	"github.com/jackycsl/catalog/pkg/util/helper"
 )
 
 func main() {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	receiver, err := kafka.NewKafkaReceiver([]string{"localhost:9092"}, helper.BackfillGameTopic)
+	receiver, err := kafka.NewKafkaReceiver([]string{"localhost:9092"}, "kratos")
 	if err != nil {
 		panic(err)
 	}
