@@ -53,13 +53,7 @@ func NewGameUseCase(repo GameRepo, logger log.Logger) *GameUseCase {
 }
 
 func (uc *GameUseCase) Create(ctx context.Context, u *Game) (*Game, error) {
-	// g, err := uc.repo.CreateGame(ctx, u)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return g, err
-
-	g, err := uc.repo.CacheCreateGame(ctx, u)
+	g, err := uc.repo.KafkaCreateGame(ctx, u)
 	if err != nil {
 		return nil, err
 	}

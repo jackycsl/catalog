@@ -11,16 +11,42 @@ import (
 	"github.com/jackycsl/catalog/pkg/util/helper"
 )
 
+type GameEntry struct {
+	GameId      int64  `json:"game_id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+	Count       int64  `json:"count,omitempty"`
+}
+
 func (r *gameRepo) KafkaCreateGame(ctx context.Context, c *biz.Game) (*biz.Game, error) {
-	return nil, nil
+	ge := &GameEntry{
+		Name:        c.Name,
+		Description: c.Description,
+		Count:       c.Count,
+	}
+	g, err := json.Marshal(ge)
+	if err != nil {
+		return nil, err
+	}
+	msg := kafka.NewMessage(helper.CreateGameTopic, c.Name, g)
+
+	go func() {
+		fmt.Printf("Sending create message to Kafka, key:%s, value:%s\n", msg.Key(), msg.Value())
+		err = r.data.kp.Send(context.Background(), msg)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+
+	return &biz.Game{
+		Name:        ge.Name,
+		Description: ge.Description,
+		Count:       ge.Count,
+	}, nil
 }
 
 func (r *gameRepo) KafkaUpdateGame(ctx context.Context, c *biz.Game) (*biz.Game, error) {
 	return nil, nil
-}
-
-type GameEntry struct {
-	GameId int64 `json:"game_id"`
 }
 
 func (r *gameRepo) KafkaBackfillGame(ctx context.Context, id int64) error {

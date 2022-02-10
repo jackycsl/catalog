@@ -48,10 +48,15 @@ func main() {
 	}
 
 	db := data.NewEntClient(bc.Data)
-	defer db.Close()
-
 	rdb := data.NewRedisClient(bc.Data)
-	defer rdb.Close()
+
+	client, cleanup, err := data.NewData(db, rdb)
+	if err != nil {
+		panic(err)
+	}
+	defer cleanup()
+
+	app := data.NewGameRepo(client)
 
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
@@ -60,7 +65,7 @@ func main() {
 		panic(err)
 	}
 
-	err = data.Receive(receiver, db, rdb)
+	err = app.Backfill(receiver)
 	if err != nil {
 		log.Println(err)
 	}

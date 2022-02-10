@@ -13,6 +13,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Data .
+type Data struct {
+	db  *ent.Client
+	rdb *redis.Client
+}
+
 func NewEntClient(conf *conf.Data) *ent.Client {
 
 	client, err := ent.Open(
@@ -38,4 +44,19 @@ func NewRedisClient(conf *conf.Data) *redis.Client {
 	})
 
 	return client
+}
+
+func NewData(entClient *ent.Client, redisClient *redis.Client) (*Data, func(), error) {
+	d := &Data{
+		db:  entClient,
+		rdb: redisClient,
+	}
+	return d, func() {
+		if err := d.db.Close(); err != nil {
+			log.Println(err)
+		}
+		if err := d.rdb.Close(); err != nil {
+			log.Println(err)
+		}
+	}, nil
 }
