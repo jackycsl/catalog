@@ -92,7 +92,9 @@ func (r *gameRepo) BackfillListGame(receiver event.Receiver) error {
 		if err := json.Unmarshal(msg.Value(), &gamelist); err != nil {
 			log.Println(err)
 		}
-		po, err := r.DBListGame(ctx, gamelist.PageNum, gamelist.PageSize)
+		// Pre heat
+		count := gamelist.PageNum * gamelist.PageSize
+		po, err := r.DBListGame(ctx, int64(1), count)
 		if err != nil {
 			return err
 		}

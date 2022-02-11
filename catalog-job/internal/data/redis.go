@@ -20,8 +20,8 @@ func (r *gameRepo) CacheSetGame(ctx context.Context, b *biz.Game) (*biz.Game, er
 	r.data.rdb.HSetNX(ctx, game, "Count", b.Count)
 	r.data.rdb.Expire(ctx, game, 8*time.Hour)
 
-	r.data.rdb.ZAdd(ctx, "game_index_cache:", &redis.Z{Score: float64(b.CreatedAt.Unix()), Member: game})
-	r.data.rdb.Expire(ctx, "game_index_cache:", 8*time.Hour)
+	// r.data.rdb.ZAdd(ctx, "game_index_cache:", &redis.Z{Score: float64(b.CreatedAt.Unix()), Member: game})
+	// r.data.rdb.Expire(ctx, "game_index_cache:", 8*time.Hour)
 
 	gameData := r.data.rdb.HGetAll(ctx, game).Val()
 	if len(gameData) == 0 {
