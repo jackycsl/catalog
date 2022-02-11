@@ -41,6 +41,7 @@ type GameRepo interface {
 	KafkaCreateGame(ctx context.Context, c *Game) (*Game, error)
 	KafkaUpdateGame(ctx context.Context, c *Game) (*Game, error)
 	KafkaBackfillGame(ctx context.Context, Id int64) error
+	KafkaBackfillListGame(ctx context.Context, pageNum int64, pageSize int64) error
 }
 
 type GameUseCase struct {
@@ -53,7 +54,12 @@ func NewGameUseCase(repo GameRepo, logger log.Logger) *GameUseCase {
 }
 
 func (uc *GameUseCase) Create(ctx context.Context, u *Game) (*Game, error) {
-	g, err := uc.repo.KafkaCreateGame(ctx, u)
+	// g, err := uc.repo.KafkaCreateGame(ctx, u)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return g, err
+	g, err := uc.repo.CacheCreateGame(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -89,5 +95,24 @@ func (uc *GameUseCase) Update(ctx context.Context, u *Game) (*Game, error) {
 }
 
 func (uc *GameUseCase) List(ctx context.Context, pageNum, pageSize int64) ([]*Game, error) {
-	return uc.repo.ListGame(ctx, pageNum, pageSize)
+	var requestGroup singleflight.Group
+	p, err := uc.repo.CacheListGame(ctx, pageNum, pageSize)
+
+	// Cache miss, read from db, create backfill list job
+	if errors.Is(err, helper.ErrRecordNotFound) || len(p) < int(pageSize) {
+		val, err, _ := requestGroup.Do("get list from db", func() (interface{}, error) {
+			fmt.Println("requesting from db")
+			return uc.repo.ListGame(ctx, pageNum, pageSize)
+		})
+		if err != nil {
+			return nil, err
+		}
+		p = val.([]*Game)
+
+		go func(ctx context.Context, pageNum, pageSize int64) {
+			uc.repo.KafkaBackfillListGame(ctx, pageNum, pageSize)
+		}(ctx, pageNum, pageSize)
+	}
+
+	return p, nil
 }

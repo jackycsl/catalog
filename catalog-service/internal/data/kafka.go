@@ -18,6 +18,11 @@ type GameEntry struct {
 	Count       int64  `json:"count,omitempty"`
 }
 
+type GameList struct {
+	PageNum  int64 `json:"page_num,omitempty"`
+	PageSize int64 `json:"page_size,omitempty"`
+}
+
 func (r *gameRepo) KafkaCreateGame(ctx context.Context, c *biz.Game) (*biz.Game, error) {
 	ge := &GameEntry{
 		Name:        c.Name,
@@ -63,5 +68,24 @@ func (r *gameRepo) KafkaBackfillGame(ctx context.Context, id int64) error {
 		log.Println(err)
 	}
 	fmt.Printf("Sending backfill message to Kafka, key:%s, value:%s\n", msg.Key(), msg.Value())
+	return nil
+}
+
+func (r *gameRepo) KafkaBackfillListGame(ctx context.Context, pageNum int64, pageSize int64) error {
+	gl := &GameList{
+		PageNum:  pageNum,
+		PageSize: pageSize,
+	}
+	g, err := json.Marshal(gl)
+	if err != nil {
+		return err
+	}
+
+	msg := kafka.NewMessage(helper.BackfillListGameTopic, fmt.Sprintf("%d-%d", pageNum, pageSize), g)
+	err = r.data.kp.Send(context.Background(), msg)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Printf("Sending backfill List message to Kafka, key:%s, value:%s\n", msg.Key(), msg.Value())
 	return nil
 }

@@ -16,6 +16,11 @@ type gameRepo struct {
 	data *Data
 }
 
+type GameList struct {
+	PageNum  int64 `json:"page_num,omitempty"`
+	PageSize int64 `json:"page_size,omitempty"`
+}
+
 func NewGameRepo(data *Data) biz.GameRepo {
 	return &gameRepo{
 		data: data,
@@ -75,4 +80,32 @@ func (r *gameRepo) Create(receiver event.Receiver) error {
 		return err
 	}
 	return nil
+}
+
+func (r *gameRepo) BackfillListGame(receiver event.Receiver) error {
+	var ctx = context.Background()
+	fmt.Println("start receiver")
+
+	err := receiver.Receive(ctx, func(ctx context.Context, msg event.Event) error {
+		fmt.Printf("key:%s, value:%s\n", msg.Key(), msg.Value())
+		var gamelist GameList
+		if err := json.Unmarshal(msg.Value(), &gamelist); err != nil {
+			log.Println(err)
+		}
+		po, err := r.DBListGame(ctx, gamelist.PageNum, gamelist.PageSize)
+		if err != nil {
+			return err
+		}
+		err = r.CacheSetGameList(ctx, po)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Games sets in cache")
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

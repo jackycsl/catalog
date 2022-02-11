@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -64,4 +65,29 @@ func (r *gameRepo) CacheCreateGame(ctx context.Context, b *biz.Game) (*biz.Game,
 		Description: gameData["Description"],
 		Count:       count,
 	}, nil
+}
+
+func (r *gameRepo) CacheSetGameList(ctx context.Context, gs []*biz.Game) error {
+
+	pipe := r.data.rdb.Pipeline()
+
+	for _, g := range gs {
+		gameId := strconv.Itoa(int(g.Id))
+		game := "game_content:" + gameId
+		pipe.HSet(ctx, game, map[string]interface{}{
+			"Name":        g.Name,
+			"Description": g.Description,
+			"Count":       g.Count,
+			"Created_at":  g.CreatedAt,
+		})
+		pipe.ZAdd(ctx, "game_index_cache:", &redis.Z{Score: float64(g.CreatedAt.Unix()), Member: game})
+		pipe.Expire(ctx, "game_index_cache:", 8*time.Hour)
+	}
+
+	_, err := pipe.Exec(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return nil
 }

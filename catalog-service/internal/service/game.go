@@ -74,6 +74,14 @@ func (s *CatalogService) UpdateGame(ctx context.Context, req *v1.UpdateGameReq) 
 func (s *CatalogService) ListGame(ctx context.Context, req *v1.ListGameReq) (*v1.ListGameReply, error) {
 
 	rv, err := s.bc.List(ctx, req.PageNum, req.PageSize)
+	if err != nil {
+		switch {
+		case errors.Is(err, helper.ErrRecordNotFound):
+			return nil, v1.ErrorGameNotFound("No Games not found")
+		default:
+			return nil, v1.ErrorUnknownError(err.Error())
+		}
+	}
 	rs := make([]*v1.ListGameReply_Game, 0)
 	for _, x := range rv {
 		rs = append(rs, &v1.ListGameReply_Game{

@@ -6,6 +6,7 @@ import (
 	"github.com/jackycsl/catalog/catalog-job/internal/biz"
 	"github.com/jackycsl/catalog/catalog-job/internal/data/ent"
 	"github.com/jackycsl/catalog/pkg/util/helper"
+	"github.com/jackycsl/catalog/pkg/util/pagination"
 )
 
 func (r *gameRepo) DbGetGame(ctx context.Context, id int64) (*biz.Game, error) {
@@ -43,4 +44,24 @@ func (r *gameRepo) DbCreateGame(ctx context.Context, b *biz.Game) (*biz.Game, er
 		Description: po.Description,
 		Count:       po.Count,
 	}, nil
+}
+
+func (r *gameRepo) DBListGame(ctx context.Context, pageNum, pageSize int64) ([]*biz.Game, error) {
+	pos, err := r.data.db.Game.Query().
+		Offset(int(pagination.GetPageOffset(pageNum, pageSize))).
+		Limit(int(pageSize)).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rv := make([]*biz.Game, 0)
+	for _, po := range pos {
+		rv = append(rv, &biz.Game{
+			Id:          po.ID,
+			Name:        po.Name,
+			Description: po.Description,
+			Count:       po.Count,
+		})
+	}
+	return rv, nil
 }

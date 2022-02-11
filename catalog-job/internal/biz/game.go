@@ -17,8 +17,13 @@ type Game struct {
 
 type GameRepo interface {
 	Backfill(receiver event.Receiver) error
-	Create(receiver event.Receiver) error
 	DbGetGame(ctx context.Context, id int64) (*Game, error)
-	CacheSetGame(ctx context.Context, b *Game) (*Game, error)
-	DbCreateGame(ctx context.Context, b *Game) (*Game, error)
+	CacheSetGame(ctx context.Context, g *Game) (*Game, error)
+
+	Create(receiver event.Receiver) error
+	DbCreateGame(ctx context.Context, g *Game) (*Game, error)
+
+	BackfillListGame(receiver event.Receiver) error
+	DBListGame(ctx context.Context, pageNum, pageSize int64) ([]*Game, error)
+	CacheSetGameList(ctx context.Context, gs []*Game) error
 }

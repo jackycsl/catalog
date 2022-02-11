@@ -94,6 +94,9 @@ func (r *gameRepo) ListGame(ctx context.Context, pageNum, pageSize int64) ([]*bi
 	if err != nil {
 		return nil, err
 	}
+	if len(pos) == 0 {
+		return nil, helper.ErrRecordNotFound
+	}
 	rv := make([]*biz.Game, 0)
 	for _, po := range pos {
 		rv = append(rv, &biz.Game{
