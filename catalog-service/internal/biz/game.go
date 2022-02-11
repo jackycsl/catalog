@@ -54,16 +54,16 @@ func NewGameUseCase(repo GameRepo, logger log.Logger) *GameUseCase {
 }
 
 func (uc *GameUseCase) Create(ctx context.Context, u *Game) (*Game, error) {
-	// g, err := uc.repo.KafkaCreateGame(ctx, u)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return g, err
-	g, err := uc.repo.CacheCreateGame(ctx, u)
+	g, err := uc.repo.KafkaCreateGame(ctx, u)
 	if err != nil {
 		return nil, err
 	}
 	return g, err
+	// g, err := uc.repo.CacheCreateGame(ctx, u)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return g, err
 }
 
 func (uc *GameUseCase) Get(ctx context.Context, id int64) (*Game, error) {
@@ -91,7 +91,12 @@ func (uc *GameUseCase) Get(ctx context.Context, id int64) (*Game, error) {
 }
 
 func (uc *GameUseCase) Update(ctx context.Context, u *Game) (*Game, error) {
-	return uc.repo.UpdateGame(ctx, u)
+	g, err := uc.repo.KafkaUpdateGame(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+	return g, err
+	// return uc.repo.UpdateGame(ctx, u)
 }
 
 func (uc *GameUseCase) List(ctx context.Context, pageNum, pageSize int64) ([]*Game, error) {

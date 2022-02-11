@@ -51,7 +51,32 @@ func (r *gameRepo) KafkaCreateGame(ctx context.Context, c *biz.Game) (*biz.Game,
 }
 
 func (r *gameRepo) KafkaUpdateGame(ctx context.Context, c *biz.Game) (*biz.Game, error) {
-	return nil, nil
+	ge := &GameEntry{
+		GameId:      c.Id,
+		Name:        c.Name,
+		Description: c.Description,
+		Count:       c.Count,
+	}
+	g, err := json.Marshal(ge)
+	if err != nil {
+		return nil, err
+	}
+	msg := kafka.NewMessage(helper.UpdateGameTopic, c.Name, g)
+
+	go func() {
+		fmt.Printf("Sending update message to Kafka, key:%s, value:%s\n", msg.Key(), msg.Value())
+		err = r.data.kp.Send(context.Background(), msg)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+
+	return &biz.Game{
+		Id:          ge.GameId,
+		Name:        ge.Name,
+		Description: ge.Description,
+		Count:       ge.Count,
+	}, nil
 }
 
 func (r *gameRepo) KafkaBackfillGame(ctx context.Context, id int64) error {

@@ -24,6 +24,9 @@ type GameRepo interface {
 	DbCreateGame(ctx context.Context, g *Game) (*Game, error)
 
 	BackfillListGame(receiver event.Receiver) error
-	DBListGame(ctx context.Context, pageNum, pageSize int64) ([]*Game, error)
+	DbListGame(ctx context.Context, pageNum, pageSize int64) ([]*Game, error)
 	CacheSetGameList(ctx context.Context, gs []*Game) error
+
+	Update(receiver event.Receiver) error
+	DbUpdateGame(ctx context.Context, b *Game) (*Game, error)
 }

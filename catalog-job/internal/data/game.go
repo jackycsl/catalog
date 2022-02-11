@@ -94,7 +94,7 @@ func (r *gameRepo) BackfillListGame(receiver event.Receiver) error {
 		}
 		// Pre heat
 		count := gamelist.PageNum * gamelist.PageSize
-		po, err := r.DBListGame(ctx, int64(1), count)
+		po, err := r.DbListGame(ctx, int64(1), count)
 		if err != nil {
 			return err
 		}
@@ -102,7 +102,7 @@ func (r *gameRepo) BackfillListGame(receiver event.Receiver) error {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Games sets in cache")
+		fmt.Printf("Games sets in cache\n")
 		return nil
 	})
 	if err != nil {
@@ -110,4 +110,32 @@ func (r *gameRepo) BackfillListGame(receiver event.Receiver) error {
 	}
 	return nil
 
+}
+
+func (r *gameRepo) Update(receiver event.Receiver) error {
+	var ctx = context.Background()
+	fmt.Println("start receiver")
+
+	err := receiver.Receive(ctx, func(ctx context.Context, msg event.Event) error {
+		fmt.Printf("key:%s, value:%s\n", msg.Key(), msg.Value())
+		var game biz.Game
+		if err := json.Unmarshal(msg.Value(), &game); err != nil {
+			log.Println(err)
+		}
+		po, err := r.DbUpdateGame(ctx, &game)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Game updated at db, id: %d\n", po.Id)
+		co, err := r.CacheCreateGame(ctx, po)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Game updated at Cache key: %d\n", co.Id)
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

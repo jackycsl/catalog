@@ -80,6 +80,11 @@ func main() {
 		panic(err)
 	}
 
+	updateReceiver, err := kafka.NewKafkaReceiver(bc.Data.Kafka.Addrs, helper.UpdateGameTopic)
+	if err != nil {
+		panic(err)
+	}
+
 	g.Go(func() error {
 		err = app.Backfill(backfillReceiver)
 		if err != nil {
@@ -105,11 +110,20 @@ func main() {
 	})
 
 	g.Go(func() error {
+		err = app.Update(updateReceiver)
+		if err != nil {
+			log.Println(err)
+		}
+		return nil
+	})
+
+	g.Go(func() error {
 		select {
 		case s := <-sigs:
 			backfillReceiver.Close()
 			createReceiver.Close()
 			backfillListReceiver.Close()
+			updateReceiver.Close()
 			if err != nil {
 				log.Println(err)
 			}

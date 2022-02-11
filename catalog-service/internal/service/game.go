@@ -54,6 +54,9 @@ func (s *CatalogService) UpdateGame(ctx context.Context, req *v1.UpdateGameReq) 
 		Description: req.Description,
 		Count:       req.Count,
 	}
+	if req.Id == 0 {
+		return nil, v1.ErrorUnknownError("Invalid Input")
+	}
 	x, err := s.bc.Update(ctx, b)
 	if err != nil {
 		switch {
