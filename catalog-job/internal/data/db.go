@@ -43,6 +43,7 @@ func (r *gameRepo) DbCreateGame(ctx context.Context, b *biz.Game) (*biz.Game, er
 		Name:        po.Name,
 		Description: po.Description,
 		Count:       po.Count,
+		CreatedAt:   po.CreatedAt,
 	}, nil
 }
 
@@ -61,6 +62,7 @@ func (r *gameRepo) DbListGame(ctx context.Context, pageNum, pageSize int64) ([]*
 			Name:        po.Name,
 			Description: po.Description,
 			Count:       po.Count,
+			CreatedAt:   po.CreatedAt,
 		})
 	}
 	return rv, nil

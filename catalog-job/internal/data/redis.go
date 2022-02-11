@@ -74,12 +74,12 @@ func (r *gameRepo) CacheSetGameList(ctx context.Context, gs []*biz.Game) error {
 	for _, g := range gs {
 		gameId := strconv.Itoa(int(g.Id))
 		game := "game_content:" + gameId
-		pipe.HSet(ctx, game, map[string]interface{}{
-			"Name":        g.Name,
-			"Description": g.Description,
-			"Count":       g.Count,
-			"Created_at":  g.CreatedAt,
-		})
+
+		pipe.HSetNX(ctx, game, "Name", g.Name)
+		pipe.HSetNX(ctx, game, "Description", g.Description)
+		pipe.HSetNX(ctx, game, "Count", g.Count)
+		pipe.Expire(ctx, game, 8*time.Hour)
+
 		pipe.ZAdd(ctx, "game_index_cache:", &redis.Z{Score: float64(g.CreatedAt.Unix()), Member: game})
 		pipe.Expire(ctx, "game_index_cache:", 8*time.Hour)
 	}
