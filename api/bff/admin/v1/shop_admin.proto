@@ -78,7 +78,10 @@ message CreateGameReq {
 }
 
 message CreateGameReply {
-
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
 }
 
 message UpdateGameReq {
@@ -89,7 +92,10 @@ message UpdateGameReq {
 }
 
 message UpdateGameReply {
-
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 count = 4;
 }
 
 message DeleteGameReq {
