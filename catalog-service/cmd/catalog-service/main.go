@@ -24,13 +24,14 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name string = "catalog.service"
+	Name string = "game.catalog.service"
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.
 	flagconf string
 
-	id, _ = os.Hostname()
+	id = "game.catalog.service" // temp
+	// id, _ = os.Hostname()
 )
 
 func init() {

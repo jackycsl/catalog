@@ -24,8 +24,8 @@ type ShopInterfaceHTTPServer interface {
 
 func RegisterShopInterfaceHTTPServer(s *http.Server, srv ShopInterfaceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/v1/catalog/Games", _ShopInterface_ListGame0_HTTP_Handler(srv))
-	r.GET("/v1/catalog/Games/{id}", _ShopInterface_GetGame0_HTTP_Handler(srv))
+	r.GET("/v1/catalog/games", _ShopInterface_ListGame0_HTTP_Handler(srv))
+	r.GET("/v1/catalog/games/{id}", _ShopInterface_GetGame0_HTTP_Handler(srv))
 }
 
 func _ShopInterface_ListGame0_HTTP_Handler(srv ShopInterfaceHTTPServer) func(ctx http.Context) error {
@@ -84,7 +84,7 @@ func NewShopInterfaceHTTPClient(client *http.Client) ShopInterfaceHTTPClient {
 
 func (c *ShopInterfaceHTTPClientImpl) GetGame(ctx context.Context, in *GetGameReq, opts ...http.CallOption) (*GetGameReply, error) {
 	var out GetGameReply
-	pattern := "/v1/catalog/Games/{id}"
+	pattern := "/v1/catalog/games/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation("/shop.interface.v1.ShopInterface/GetGame"))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -97,7 +97,7 @@ func (c *ShopInterfaceHTTPClientImpl) GetGame(ctx context.Context, in *GetGameRe
 
 func (c *ShopInterfaceHTTPClientImpl) ListGame(ctx context.Context, in *ListGameReq, opts ...http.CallOption) (*ListGameReply, error) {
 	var out ListGameReply
-	pattern := "/v1/catalog/Games"
+	pattern := "/v1/catalog/games"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation("/shop.interface.v1.ShopInterface/ListGame"))
 	opts = append(opts, http.PathTemplate(pattern))

@@ -22,3 +22,15 @@ func IsUnknownError(err error) bool {
 func ErrorUnknownError(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ShopInterfaceErrorReason_UNKNOWN_ERROR.String(), fmt.Sprintf(format, args...))
 }
+
+func IsGameNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ShopInterfaceErrorReason_GAME_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorGameNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ShopInterfaceErrorReason_GAME_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}

@@ -11,13 +11,13 @@ service ShopInterface {
 
     rpc ListGame (ListGameReq) returns (ListGameReply) {
         option (google.api.http) = {
-            get: "/v1/catalog/Games"
+            get: "/v1/catalog/games"
         };
     }
 
     rpc GetGame (GetGameReq) returns (GetGameReply) {
         option (google.api.http) = {
-            get: "/v1/catalog/Games/{id}"
+            get: "/v1/catalog/games/{id}"
         };
     }
 

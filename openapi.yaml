@@ -89,7 +89,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DeleteGameReply'
-    /v1/catalog/Games:
+    /v1/catalog/games:
         get:
             tags:
                 - ShopInterface
@@ -112,7 +112,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListGameReply'
-    /v1/catalog/Games/{id}:
+    /v1/catalog/games/{id}:
         get:
             tags:
                 - ShopInterface
