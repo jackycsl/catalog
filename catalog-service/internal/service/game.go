@@ -91,6 +91,7 @@ func (s *CatalogService) ListGame(ctx context.Context, req *v1.ListGameReq) (*v1
 			Id:          x.Id,
 			Name:        x.Name,
 			Description: x.Description,
+			Count:       x.Count,
 		})
 	}
 

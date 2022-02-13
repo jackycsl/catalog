@@ -18,7 +18,7 @@ type catalogRepo struct {
 func NewCatalogRepo(data *Data, logger log.Logger) biz.CatalogRepo {
 	return &catalogRepo{
 		data: data,
-		log:  log.NewHelper(logger),
+		log:  log.NewHelper(log.With(logger, "module", "data/game")),
 	}
 }
 
@@ -51,6 +51,7 @@ func (r *catalogRepo) ListGame(ctx context.Context, pageNum, pageSize int64) ([]
 			Id:          x.Id,
 			Name:        x.Name,
 			Description: x.Description,
+			Count:       x.Count,
 		})
 	}
 	return rv, nil

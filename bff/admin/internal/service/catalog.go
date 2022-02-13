@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	v1 "github.com/jackycsl/catalog/api/bff/interface/v1"
+	v1 "github.com/jackycsl/catalog/api/bff/admin/v1"
 )
 
-func (s *ShopInterface) ListGame(ctx context.Context, req *v1.ListGameReq) (*v1.ListGameReply, error) {
+func (s *ShopAdmin) ListGame(ctx context.Context, req *v1.ListGameReq) (*v1.ListGameReply, error) {
 	rv, err := s.cc.ListGame(ctx, req.PageNum, req.PageSize)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func (s *ShopInterface) ListGame(ctx context.Context, req *v1.ListGameReq) (*v1.
 	return reply, nil
 }
 
-func (s *ShopInterface) GetGame(ctx context.Context, req *v1.GetGameReq) (*v1.GetGameReply, error) {
+func (s *ShopAdmin) GetGame(ctx context.Context, req *v1.GetGameReq) (*v1.GetGameReply, error) {
 	x, err := s.cc.GetGame(ctx, req.Id)
 	if err != nil {
 		return nil, err

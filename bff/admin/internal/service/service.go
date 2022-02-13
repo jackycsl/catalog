@@ -19,7 +19,7 @@ type ShopAdmin struct {
 
 func NewShopAdmin(cc *biz.CatalogUsecase, logger log.Logger) *ShopAdmin {
 	return &ShopAdmin{
-		log: log.NewHelper(log.With(logger, "module", "service/interface")),
+		log: log.NewHelper(log.With(logger, "module", "service/admin")),
 		cc:  cc,
 	}
 }
