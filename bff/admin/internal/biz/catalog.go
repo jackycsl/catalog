@@ -16,6 +16,8 @@ type Game struct {
 type CatalogRepo interface {
 	GetGame(ctx context.Context, id int64) (*Game, error)
 	ListGame(ctx context.Context, pageNum, pageSize int64) ([]*Game, error)
+	CreateGame(ctx context.Context, c *Game) (*Game, error)
+	UpdateGame(ctx context.Context, c *Game) (*Game, error)
 }
 
 type CatalogUsecase struct {
@@ -33,4 +35,11 @@ func (uc *CatalogUsecase) GetGame(ctx context.Context, id int64) (*Game, error) 
 
 func (uc *CatalogUsecase) ListGame(ctx context.Context, pageNum, pageSize int64) ([]*Game, error) {
 	return uc.repo.ListGame(ctx, pageNum, pageSize)
+}
+
+func (uc *CatalogUsecase) CreateGame(ctx context.Context, c *Game) (*Game, error) {
+	return uc.repo.CreateGame(ctx, c)
+}
+func (uc *CatalogUsecase) UpdateGame(ctx context.Context, c *Game) (*Game, error) {
+	return uc.repo.UpdateGame(ctx, c)
 }

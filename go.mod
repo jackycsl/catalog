@@ -21,6 +21,7 @@ require (
 	github.com/go-kratos/grpc-gateway/v2 v2.5.1-0.20210811062259-c92d36e434b1 // indirect
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20220209030627-9662ef3c213d // indirect
 	github.com/go-kratos/swagger-api v1.0.1 // indirect
+	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
 	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/subcommands v1.0.1 // indirect

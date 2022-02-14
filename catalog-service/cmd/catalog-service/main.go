@@ -2,7 +2,10 @@ package main
 
 import (
 	"flag"
+	"math/rand"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -30,8 +33,7 @@ var (
 	// flagconf is the config flag.
 	flagconf string
 
-	id = "game.catalog.service" // temp
-	// id, _ = os.Hostname()
+	id, _ = os.Hostname()
 )
 
 func init() {
@@ -39,6 +41,8 @@ func init() {
 }
 
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, rr registry.Registrar) *kratos.App {
+	rand.Seed(time.Now().UnixNano())
+	id = id + strconv.Itoa(rand.Intn(100)) // temp
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),

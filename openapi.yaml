@@ -166,7 +166,17 @@ components:
     schemas:
         CreateGameReply:
             type: object
-            properties: {}
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
         CreateGameReq:
             type: object
             properties:
@@ -254,7 +264,17 @@ components:
                     format: int64
         UpdateGameReply:
             type: object
-            properties: {}
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                description:
+                    type: string
+                count:
+                    type: integer
+                    format: int64
         UpdateGameReq:
             type: object
             properties:

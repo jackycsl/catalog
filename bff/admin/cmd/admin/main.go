@@ -2,7 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"math/rand"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/jackycsl/catalog/bff/admin/internal/conf"
 
@@ -31,8 +35,7 @@ var (
 	// flagconf is the config flag.
 	flagconf string
 
-	id = "game.shop.admin" // temp
-	// id, _ = os.Hostname()
+	id, _ = os.Hostname()
 )
 
 func init() {
@@ -40,6 +43,9 @@ func init() {
 }
 
 func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, rr registry.Registrar) *kratos.App {
+	rand.Seed(time.Now().UnixNano())
+	id = id + strconv.Itoa(rand.Intn(100)) // temp
+	fmt.Println(id)
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -99,7 +105,7 @@ func main() {
 		)),
 	)
 
-	app, cleanup, err := initApp(bc.Server, &rc, bc.Data, logger, tp)
+	app, cleanup, err := initApp(bc.Server, &rc, bc.Data, bc.Auth, logger, tp)
 	if err != nil {
 		panic(err)
 	}

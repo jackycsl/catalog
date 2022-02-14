@@ -20,7 +20,7 @@ import (
 // Injectors from wire.go:
 
 // initApp init kratos application.
-func initApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, logger log.Logger, tracerProvider *trace.TracerProvider) (*kratos.App, func(), error) {
+func initApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Data, auth *conf.Auth, logger log.Logger, tracerProvider *trace.TracerProvider) (*kratos.App, func(), error) {
 	discovery := data.NewDiscovery(registry)
 	catalogClient := data.NewCatalogServiceClient(discovery, tracerProvider)
 	dataData, err := data.NewData(confData, logger, catalogClient)
@@ -30,8 +30,8 @@ func initApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	catalogRepo := data.NewCatalogRepo(dataData, logger)
 	catalogUsecase := biz.NewCatalogUsecase(catalogRepo, logger)
 	shopAdmin := service.NewShopAdmin(catalogUsecase, logger)
-	httpServer := server.NewHTTPServer(confServer, shopAdmin, tracerProvider, logger)
-	grpcServer := server.NewGRPCServer(confServer, shopAdmin, tracerProvider, logger)
+	httpServer := server.NewHTTPServer(confServer, auth, shopAdmin, tracerProvider, logger)
+	grpcServer := server.NewGRPCServer(confServer, auth, shopAdmin, tracerProvider, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, httpServer, grpcServer, registrar)
 	return app, func() {

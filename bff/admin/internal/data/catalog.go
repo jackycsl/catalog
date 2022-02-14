@@ -56,3 +56,38 @@ func (r *catalogRepo) ListGame(ctx context.Context, pageNum, pageSize int64) ([]
 	}
 	return rv, nil
 }
+
+func (r *catalogRepo) CreateGame(ctx context.Context, c *biz.Game) (*biz.Game, error) {
+	reply, err := r.data.cc.CreateGame(ctx, &ctV1.CreateGameReq{
+		Name:        c.Name,
+		Description: c.Description,
+		Count:       c.Count,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &biz.Game{
+		Id:          reply.Id,
+		Name:        reply.Name,
+		Description: reply.Description,
+		Count:       reply.Count,
+	}, nil
+}
+
+func (r *catalogRepo) UpdateGame(ctx context.Context, c *biz.Game) (*biz.Game, error) {
+	reply, err := r.data.cc.UpdateGame(ctx, &ctV1.UpdateGameReq{
+		Id:          c.Id,
+		Name:        c.Name,
+		Description: c.Description,
+		Count:       c.Count,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &biz.Game{
+		Id:          reply.Id,
+		Name:        reply.Name,
+		Description: reply.Description,
+		Count:       reply.Count,
+	}, nil
+}

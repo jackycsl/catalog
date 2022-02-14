@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -119,6 +120,8 @@ func main() {
 
 	g.Go(func() error {
 		select {
+		case <-ctx.Done():
+			return ctx.Err()
 		case s := <-sigs:
 			backfillReceiver.Close()
 			createReceiver.Close()
@@ -128,13 +131,11 @@ func main() {
 				log.Println(err)
 			}
 			return fmt.Errorf("caught signal: %v", s.String())
-		case <-ctx.Done():
-			return ctx.Err()
 		}
 	})
 
-	if err := g.Wait(); err != nil {
-		fmt.Println(err)
+	if err := g.Wait(); err != nil && !errors.Is(err, context.Canceled) {
+		log.Println(err)
 		return
 	}
 
