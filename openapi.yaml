@@ -134,8 +134,8 @@ paths:
     /v1/catalog/health:
         get:
             tags:
-                - Catalog
-            operationId: Catalog_HealthCheck
+                - User
+            operationId: User_HealthCheck
             responses:
                 "200":
                     description: OK
@@ -222,6 +222,12 @@ components:
                 status:
                     type: integer
                     format: enum
+        HealthReply:
+            type: object
+            properties:
+                status:
+                    type: integer
+                    format: enum
         ListGameReply:
             type: object
             properties:
@@ -292,3 +298,4 @@ tags:
     - name: Catalog
     - name: ShopAdmin
     - name: ShopInterface
+    - name: User
