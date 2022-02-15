@@ -2,9 +2,14 @@ package helper
 
 import "errors"
 
-var ErrRecordNotFound = errors.New("record not found")
+var (
+	ErrRecordNotFound = errors.New("record not found")
+	ErrUserNotFound   = errors.New("user not found")
+)
 
-var BackfillGameTopic = "backfillGame"
-var BackfillListGameTopic = "backfillListGame"
-var CreateGameTopic = "createGame"
-var UpdateGameTopic = "updateGame"
+var (
+	BackfillGameTopic     = "backfillGame"
+	BackfillListGameTopic = "backfillListGame"
+	CreateGameTopic       = "createGame"
+	UpdateGameTopic       = "updateGame"
+)

@@ -28,11 +28,11 @@ func IsLoginFailed(err error) bool {
 		return false
 	}
 	e := errors.FromError(err)
-	return e.Reason == UserServiceErrorReason_LOGIN_FAILED.String() && e.Code == 500
+	return e.Reason == UserServiceErrorReason_LOGIN_FAILED.String() && e.Code == 401
 }
 
 func ErrorLoginFailed(format string, args ...interface{}) *errors.Error {
-	return errors.New(500, UserServiceErrorReason_LOGIN_FAILED.String(), fmt.Sprintf(format, args...))
+	return errors.New(401, UserServiceErrorReason_LOGIN_FAILED.String(), fmt.Sprintf(format, args...))
 }
 
 func IsRegisterFailed(err error) bool {
@@ -45,4 +45,16 @@ func IsRegisterFailed(err error) bool {
 
 func ErrorRegisterFailed(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, UserServiceErrorReason_REGISTER_FAILED.String(), fmt.Sprintf(format, args...))
+}
+
+func IsUserNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserServiceErrorReason_USER_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorUserNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, UserServiceErrorReason_USER_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }

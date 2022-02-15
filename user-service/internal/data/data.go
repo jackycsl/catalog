@@ -3,11 +3,11 @@ package data
 import (
 	"context"
 
-	"entgo.io/ent/examples/fs/ent"
-	"entgo.io/ent/examples/fs/ent/migrate"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/jackycsl/catalog/user-service/internal/conf"
+	"github.com/jackycsl/catalog/user-service/internal/data/ent"
+	"github.com/jackycsl/catalog/user-service/internal/data/ent/migrate"
 
 	// init mysql driver
 	_ "github.com/go-sql-driver/mysql"
@@ -32,7 +32,7 @@ func NewEntClient(conf *conf.Data, logger log.Logger) *ent.Client {
 		log.Fatalf("failed opening connection to db: %v", err)
 	}
 	// Run the auto migration tool.
-	if err := client.Schema.Create(context.Background(), migrate.WithForeignKeys(false)); err != nil {
+	if err := client.Schema.Create(context.Background(), migrate.WithForeignKeys(false), migrate.WithDropIndex(true)); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 	return client

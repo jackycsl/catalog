@@ -10,6 +10,7 @@ enum UserServiceErrorReason {
     option (errors.default_code) = 500;
 
     UNKNOWN_ERROR = 0;
-    LOGIN_FAILED = 1;
+    LOGIN_FAILED = 1 [(errors.code) = 401];
     REGISTER_FAILED = 2;
+    USER_NOT_FOUND = 3 [(errors.code) = 404];
 }
