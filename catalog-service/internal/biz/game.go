@@ -91,6 +91,10 @@ func (uc *GameUseCase) Get(ctx context.Context, id int64) (*Game, error) {
 }
 
 func (uc *GameUseCase) Update(ctx context.Context, u *Game) (*Game, error) {
+	_, err := uc.repo.GetGame(ctx, u.Id)
+	if err != nil {
+		return nil, err
+	}
 	g, err := uc.repo.KafkaUpdateGame(ctx, u)
 	if err != nil {
 		return nil, err
