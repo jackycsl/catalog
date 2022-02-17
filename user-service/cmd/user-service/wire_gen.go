@@ -28,7 +28,11 @@ func initApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	}
 	userRepo := data.NewUserRepo(dataData, logger)
 	userUseCase := biz.NewUserUseCase(userRepo, logger)
-	userService := service.NewUserService(userUseCase, logger)
+	cardRepo := data.NewCardRepo(dataData, logger)
+	cardUseCase := biz.NewCardUseCase(cardRepo, logger)
+	addressRepo := data.NewAddressRepo(dataData, logger)
+	addressUseCase := biz.NewAddressUseCase(addressRepo, logger)
+	userService := service.NewUserService(userUseCase, cardUseCase, addressUseCase, logger)
 	httpServer := server.NewHTTPServer(confServer, userService, tracerProvider, logger)
 	grpcServer := server.NewGRPCServer(confServer, userService, tracerProvider, logger)
 	registrar := server.NewRegistrar(registry)

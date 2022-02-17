@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/jackycsl/catalog/pkg/util/helper"
 	"github.com/jackycsl/catalog/user-service/internal/conf"
 
 	"github.com/go-kratos/kratos/v2"
@@ -69,6 +70,9 @@ func main() {
 		"trace_id", tracing.TraceID(),
 		"span_id", tracing.SpanID(),
 	)
+
+	logger = log.NewFilter(logger, log.FilterFunc(helper.PasswordFilterFunc))
+
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),

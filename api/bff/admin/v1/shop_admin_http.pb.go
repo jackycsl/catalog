@@ -31,7 +31,7 @@ func RegisterShopAdminHTTPServer(s *http.Server, srv ShopAdminHTTPServer) {
 	r.POST("/admin/v1/catalog/games", _ShopAdmin_CreateGame0_HTTP_Handler(srv))
 	r.PUT("/admin/v1/catalog/games/{id}", _ShopAdmin_UpdateGame0_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/catalog/games/{id}", _ShopAdmin_DeleteGame0_HTTP_Handler(srv))
-	r.GET("admin/v1/catalog/games/{id}", _ShopAdmin_GetGame1_HTTP_Handler(srv))
+	r.GET("/admin/v1/catalog/games/{id}", _ShopAdmin_GetGame1_HTTP_Handler(srv))
 }
 
 func _ShopAdmin_ListGame1_HTTP_Handler(srv ShopAdminHTTPServer) func(ctx http.Context) error {
@@ -182,7 +182,7 @@ func (c *ShopAdminHTTPClientImpl) DeleteGame(ctx context.Context, in *DeleteGame
 
 func (c *ShopAdminHTTPClientImpl) GetGame(ctx context.Context, in *GetGameReq, opts ...http.CallOption) (*GetGameReply, error) {
 	var out GetGameReply
-	pattern := "admin/v1/catalog/games/{id}"
+	pattern := "/admin/v1/catalog/games/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation("/shop.admin.v1.ShopAdmin/GetGame"))
 	opts = append(opts, http.PathTemplate(pattern))

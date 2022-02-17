@@ -14,12 +14,16 @@ type UserService struct {
 	v1.UnimplementedUserServer
 
 	uc *biz.UserUseCase
+	cc *biz.CardUseCase
+	ac *biz.AddressUseCase
 
 	log *log.Helper
 }
 
-func NewUserService(uc *biz.UserUseCase, logger log.Logger) *UserService {
+func NewUserService(uc *biz.UserUseCase, cc *biz.CardUseCase, ac *biz.AddressUseCase, logger log.Logger) *UserService {
 	return &UserService{
 		uc:  uc,
+		cc:  cc,
+		ac:  ac,
 		log: log.NewHelper(log.With(logger, "module", "service/server-service"))}
 }

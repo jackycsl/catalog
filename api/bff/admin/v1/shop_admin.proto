@@ -37,12 +37,11 @@ service ShopAdmin {
 
     rpc GetGame (GetGameReq) returns (GetGameReply) {
         option (google.api.http) = {
-            get: "admin/v1/catalog/games/{id}"
+            get: "/admin/v1/catalog/games/{id}"
         };
     }
 
 }
-
 
 message ListGameReq {
     int64 page_num = 1;
